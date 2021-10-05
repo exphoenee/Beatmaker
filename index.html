@@ -15,7 +15,7 @@
       referrerpolicy="no-referrer"
     ></script>
     <div id="sequencer">
-      <div class="kick">
+      <div class="kick-track">
         <div class="controls">
           <h1>Kick</h1>
           <button data-track="0" class="mute kick-volume">
@@ -41,9 +41,9 @@
           </div>
         </div>
       </div>
-      <div class="snare">
+      <div class="snare-track">
         <div class="controls">
-          <h1>snare</h1>
+          <h1>Snare</h1>
           <button data-track="1" class="mute snare-volume">
             <i class="fas fa-volume-mute"></i></button
           ><select name="snare-select" id="snare-select" class="">
@@ -67,14 +67,14 @@
           </div>
         </div>
       </div>
-      <div class="hihat">
+      <div class="hihat-track">
         <div class="controls">
-          <h1>hihat</h1>
+          <h1>Hihat</h1>
           <button data-track="1" class="mute hihat-volume">
             <i class="fas fa-volume-mute"></i></button
           ><select name="hihat-select" id="hihat-select" class="">
             <option value="./sounds/hihat-classic.wav" selected>
-              Classic hihat
+              Classic Hihat
             </option>
             <option value="./sounds/hihat-808.wav">808 Hihat</option>
             <option value="./sounds/hihat-heavy.wav">Heavy Hihat</option>
@@ -96,8 +96,8 @@
     </div>
     <button class="play">Play</button>
     <audio class="kick-sound" src="./sound/kick-classic.wav"></audio>
-    <audio class="kick-sound" src="./sound/kick-classic.wav"></audio>
-    <audio class="kick-sound" src="./sound/kick-classic.wav"></audio>
+    <audio class="snare-sound" src="./sound/snare-classic.wav"></audio>
+    <audio class="hihat-sound" src="./sound/hihat-classic.wav"></audio>
     <script src="app.min.js"></script>
   </body>
 </html>

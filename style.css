@@ -10,6 +10,31 @@ i,
 svg {
   pointer-events: none;
 }
+.sequencer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  min-height: 100vh;
+}
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 1;
+  margin: 2rem 0rem;
+}
+.controls button {
+  padding: 1rem;
+  border: 0;
+  background-color: rgb(88, 88, 88);
+  color: white;
+  cursor: pointer;
+  transition: all 0.3 ease-in-out;
+}
+.pad {
+  transition: all 0.3 ease-in-out;
+}
 .kick-pad,
 .snare-pad,
 .hihat-pad {
@@ -35,7 +60,7 @@ svg {
   justify-content: space-between;
   align-items: center;
   width: 70%;
-  margin-top: 50%;
+  margin-top: 5rem;
 }
 .kick,
 .snare,

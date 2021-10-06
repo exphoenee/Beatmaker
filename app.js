@@ -175,6 +175,7 @@ drumKit.selects.forEach((select) => {
     drumKit.changeSound(e);
   });
 });
+
 drumKit.muteBtns.forEach((btn) => {
   btn.addEventListener("click", function (e) {
     drumKit.mute(e);
@@ -184,9 +185,11 @@ drumKit.muteBtns.forEach((btn) => {
 drumKit.tempoSlider.addEventListener("input", function (e) {
   drumKit.changeTempo(e);
 });
+
 drumKit.tempoSlider.addEventListener("change", function (e) {
   drumKit.updateTempo(e);
 });
+
 /* this is a mock, that comes form node server */
 let soundclips = {
   clap: {

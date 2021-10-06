@@ -15,6 +15,33 @@ class DrumKit {
     this.muteBtns = document.querySelectorAll(".mute");
     this.tempoSlider = document.querySelector(".tempo-slider");
   }
+
+  /* rendering general HTML element */
+  createElem({ tag, content, attrs, parent, handleEvent }) {
+    let elem = document.createElement(tag);
+    for (let a in attrs) {
+      if (a === "dataset") {
+        for (let data in attrs[a]) {
+          elem.dataset[data] = attrs[a][data];
+        }
+      } else {
+        if (Array.isArray(attrs[a])) {
+          elem.setAttribute(a, attrs[a].join(" "));
+        } else {
+          elem.setAttribute(a, attrs[a]);
+        }
+      }
+    }
+
+    if (handleEvent) elem.addEventListener(handleEvent.event, handleEvent.cb);
+
+    elem.innerHTML = content ? content : null;
+
+    parent.appendChild(elem);
+
+    return elem;
+  }
+
   activePad() {
     this.classList.toggle("active");
   }
@@ -22,7 +49,7 @@ class DrumKit {
     let step = this.index % 8;
     const activeBars = document.querySelectorAll(`.b${step}`);
     //Loop over the pads
-    activeBars.forEach(bar => {
+    activeBars.forEach((bar) => {
       bar.style.animation = `playTrack 0.3s alternate ease-in-out 2`;
       if (bar.classList.contains("active")) {
         if (bar.classList.contains("kick-pad")) {
@@ -131,32 +158,32 @@ const drumKit = new DrumKit();
 
 //Event Listeners
 
-drumKit.pads.forEach(pad => {
+drumKit.pads.forEach((pad) => {
   pad.addEventListener("click", drumKit.activePad);
-  pad.addEventListener("animationend", function() {
+  pad.addEventListener("animationend", function () {
     this.style.animation = "";
   });
 });
 
-drumKit.playBtn.addEventListener("click", function() {
+drumKit.playBtn.addEventListener("click", function () {
   drumKit.updateBtn();
   drumKit.start();
 });
 
-drumKit.selects.forEach(select => {
-  select.addEventListener("change", function(e) {
+drumKit.selects.forEach((select) => {
+  select.addEventListener("change", function (e) {
     drumKit.changeSound(e);
   });
 });
-drumKit.muteBtns.forEach(btn => {
-  btn.addEventListener("click", function(e) {
+drumKit.muteBtns.forEach((btn) => {
+  btn.addEventListener("click", function (e) {
     drumKit.mute(e);
   });
 });
 
-drumKit.tempoSlider.addEventListener("input", function(e) {
+drumKit.tempoSlider.addEventListener("input", function (e) {
   drumKit.changeTempo(e);
 });
-drumKit.tempoSlider.addEventListener("change", function(e) {
+drumKit.tempoSlider.addEventListener("change", function (e) {
   drumKit.updateTempo(e);
 });

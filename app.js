@@ -123,7 +123,7 @@ class DrumKit {
   };
 
   constructor(params) {
-    this.pads = params?.pads || 8;
+    this.padNr = params?.pads || 8;
     this.drums = params?.drums || 3;
     this.drumNames = [];
 
@@ -131,19 +131,20 @@ class DrumKit {
       this.drumNames.push(drum);
     }
 
+    const sequencer = this.createSequencer();
+
     for (let d = 0; d < this.drums; d++) {
-      console.log(this.drumNames[d]);
-      for (let p = 0; p < this.pads; p++) {
-        this.createElem({
-          tag: "div",
-          attrs: { class: this.drumNames[d] },
-          parent: "test",
-        });
-        this.createElem({
-          tag: "div",
-          attrs: { class: ["pad", this.drumNames[d] + "-pad", "b" + p] },
-          parent: "test",
-        });
+      const track = this.createElem({
+        tag: "div",
+        attrs: { class: ["track", this.drumNames[d] + "-track"] },
+        parent: sequencer,
+      });
+
+      this.createController({ parent: track, drumIndex: d });
+      const pads = this.createPadContainer({ parent: track, drumIndex: d });
+
+      for (let p = 0; p < this.padNr; p++) {
+        this.createPad({ drumIndex: d, padIndex: p, parent: pads });
       }
     }
 
@@ -196,6 +197,53 @@ class DrumKit {
     }
     parent.appendChild(elem);
     return elem;
+  }
+
+  createSequencer() {
+    return this.createElem({
+      tag: "div",
+      attrs: { class: "sequencer" },
+      parent: "test",
+    });
+  }
+
+  createController({ parent, drumIndex }) {
+    const control = this.createElem({
+      tag: "div",
+      attrs: { class: "controls" },
+      parent: parent,
+    });
+    this.createElem({
+      tag: "h1",
+      content: this.drumNames[drumIndex],
+      attrs: { class: "controls" },
+      parent: control,
+    });
+    this.createElem({
+      tag: "button",
+      content: '<i class="fas fa-volume-mute"></i>',
+      attrs: { class: ["mute", this.drumNames[drumIndex] + "-volume"] },
+      parent: control,
+    });
+    return control;
+  }
+
+  createPadContainer({ drumIndex, parent }) {
+    return this.createElem({
+      tag: "div",
+      attrs: { class: ["pads", this.drumNames[drumIndex]] },
+      parent: parent,
+    });
+  }
+
+  createPad({ drumIndex, padIndex, parent }) {
+    this.createElem({
+      tag: "div",
+      attrs: {
+        class: ["pad", this.drumNames[drumIndex] + "-pad", "b" + padIndex],
+      },
+      parent: parent,
+    });
   }
 
   activePad() {

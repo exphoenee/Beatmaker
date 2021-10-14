@@ -131,25 +131,9 @@ class DrumKit {
       this.drumNames.push(drum);
     }
 
-    const sequencer = this.createSequencer();
-
-    for (let d = 0; d < this.drums; d++) {
-      const track = this.createElem({
-        tag: "div",
-        attrs: { class: ["track", this.drumNames[d] + "-track"] },
-        parent: sequencer,
-      });
-
-      this.createController({ parent: track, drumIndex: d });
-      const pads = this.createPadContainer({ parent: track, drumIndex: d });
-
-      for (let p = 0; p < this.padNr; p++) {
-        this.createPad({ drumIndex: d, padIndex: p, parent: pads });
-      }
-    }
+    this.createSequencer();
 
     this.pads = document.querySelectorAll(".pad");
-
     this.playBtn = document.querySelector(".play");
     this.currentKick = "./sounds/kick-classic.wav";
     this.currentSnare = "./sounds/snare-acoustic01.wav";
@@ -200,11 +184,20 @@ class DrumKit {
   }
 
   createSequencer() {
-    return this.createElem({
+    const sequencer = this.createElem({
       tag: "div",
       attrs: { class: "sequencer" },
       parent: "test",
     });
+
+    for (let drumIndex = 0; drumIndex < this.drums; drumIndex++) {
+      this.createTrack({
+        parent: sequencer,
+        drumIndex: drumIndex,
+      });
+    }
+
+    return sequencer;
   }
 
   createController({ parent, drumIndex }) {
@@ -228,12 +221,31 @@ class DrumKit {
     return control;
   }
 
+  createTrack({ drumIndex, parent }) {
+    const track = this.createElem({
+      tag: "div",
+      attrs: { class: ["track", this.drumNames[drumIndex] + "-track"] },
+      parent: parent,
+    });
+    this.createController({ parent: track, drumIndex: drumIndex });
+    this.createPadContainer({ parent: track, drumIndex: drumIndex });
+    return track;
+  }
+
   createPadContainer({ drumIndex, parent }) {
-    return this.createElem({
+    const pads = this.createElem({
       tag: "div",
       attrs: { class: ["pads", this.drumNames[drumIndex]] },
       parent: parent,
     });
+    for (let parentIndex = 0; parentIndex < this.padNr; parentIndex++) {
+      this.createPad({
+        drumIndex: drumIndex,
+        padIndex: parentIndex,
+        parent: pads,
+      });
+    }
+    return pads;
   }
 
   createPad({ drumIndex, padIndex, parent }) {

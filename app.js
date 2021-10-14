@@ -136,7 +136,12 @@ class DrumKit {
       for (let p = 0; p < this.pads; p++) {
         this.createElem({
           tag: "div",
-          attrs: { class: ["pad", d + "pad", "b" + p] },
+          attrs: { class: this.drumNames[d] },
+          parent: "test",
+        });
+        this.createElem({
+          tag: "div",
+          attrs: { class: ["pad", this.drumNames[d] + "-pad", "b" + p] },
           parent: "test",
         });
       }
@@ -180,8 +185,16 @@ class DrumKit {
 
     elem.innerHTML = content ? content : null;
 
+    if (typeof parent === "string") {
+      parent = [".", "#"]
+        .map((prep) => {
+          return document.querySelector(prep + parent);
+        })
+        .filter((pe) => {
+          return pe !== null;
+        })[0];
+    }
     parent.appendChild(elem);
-
     return elem;
   }
 

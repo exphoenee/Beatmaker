@@ -266,6 +266,22 @@ class DrumKit {
       attrs: { class: ["mute", this.drumNames[drumIndex] + "-volume"] },
       parent: control,
     });
+
+    const drumType = this.createElem({
+      tag: "select",
+      attrs: { name: "kick-select", id: "kick-select" },
+      parent: control,
+    });
+
+    for (let soundClip in this.soundClips[this.drumNames[drumIndex]]) {
+      this.createElem({
+        tag: "option",
+        content: soundClip,
+        attrs: { value: "./sounds/" + soundClip + ".wav" },
+        parent: drumType,
+      });
+    }
+
     return control;
   }
 
@@ -302,27 +318,18 @@ class DrumKit {
   }
 
   createPad({ drumIndex, padIndex, parent }) {
-    return this.createElem({
+    const pad = this.createElem({
       tag: "div",
       attrs: {
         class: ["pad", this.drumNames[drumIndex] + "-pad", "b" + padIndex],
       },
       parent: parent,
-      handleEvent: [
-        {
-          event: "click",
-          cb: function () {
-            this.activePad();
-          },
-        },
-        {
-          event: "animationend",
-          cb: function () {
-            this.style.animation = "";
-          },
-        },
-      ],
     });
+    pad.addEventListener("click", this.activePad);
+    pad.addEventListener("animationend", function () {
+      pad.style.animation = "";
+    });
+    return pad;
   }
 
   activePad() {

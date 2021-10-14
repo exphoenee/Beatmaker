@@ -12,31 +12,15 @@ svg {
   pointer-events: none;
 }
 
-.kick-pad,
-.snare-pad,
-.hihat-pad {
+.pad {
   width: 5rem;
   height: 5rem;
   margin: 1rem 0.5rem;
   cursor: pointer;
-}
-.kick-pad {
   background: rgb(160, 211, 224);
 }
-.snare-pad {
-  background: rgb(224, 160, 208);
-}
-.hihat-pad {
-  background: rgb(224, 194, 160);
-}
-.kick-pad.active {
+.pad.active {
   background: rgb(59, 197, 231);
-}
-.snare-pad.active {
-  background: rgb(218, 58, 178);
-}
-.hihat-pad.active {
-  background: rgb(241, 158, 64);
 }
 
 .sequencer {
@@ -47,18 +31,14 @@ svg {
   justify-content: center;
 }
 
-.hihat-track,
-.snare-track,
-.kick-track {
+.track {
   display: flex;
   align-items: center;
   width: 70%;
   justify-content: space-between;
   margin-top: 5rem;
 }
-.kick,
-.snare,
-.hihat {
+.pads {
   display: flex;
 }
 .controls {

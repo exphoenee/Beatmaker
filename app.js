@@ -132,6 +132,7 @@ class DrumKit {
     }
 
     this.createSequencer();
+    this.createSequenceControls();
 
     this.pads = document.querySelectorAll(".pad");
     this.playBtn = document.querySelector(".play");
@@ -187,7 +188,7 @@ class DrumKit {
     const sequencer = this.createElem({
       tag: "div",
       attrs: { class: "sequencer" },
-      parent: "test",
+      parent: "app",
     });
 
     for (let drumIndex = 0; drumIndex < this.drums; drumIndex++) {
@@ -198,6 +199,15 @@ class DrumKit {
     }
 
     return sequencer;
+  }
+
+  createSequenceControls() {
+    const seqCtrl = this.createElem({
+      tag: "div",
+      attrs: { class: "sequence-controls" },
+      parent: "app",
+    });
+    return seqCtrl;
   }
 
   createController({ parent, drumIndex }) {

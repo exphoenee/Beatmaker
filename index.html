@@ -7,7 +7,7 @@
     <title>Beatmaker</title>
   </head>
   <body>
-    <div id="test"></div>
+    <div class="test"></div>
     <div class="sequencer">
       <div class="kick-track">
         <div class="controls">
@@ -34,6 +34,7 @@
         </div>
       </div>
       <div class="snare-track">
+        *
         <div class="controls">
           <h1>Snare</h1>
           <button data-track="1" class="mute snare-volume">
@@ -57,16 +58,16 @@
         </div>
       </div>
       <div class="hihat-track">
+        *
         <div class="controls">
           <h1>Hihat</h1>
-          <button data-track="2" class="mute hihat-volume">
+          <button data-track="1" class="mute hihat-volume">
             <i class="fas fa-volume-mute"></i>
           </button>
           <select name="hihat-select" id="hihat-select">
-            <option value="./sounds/hihat-acoustic01.wav"></option>
-              Hihat Acoustic
-            </option>
+            <option value="./sounds/hihat-acoustic01.wav">Classic hihat</option>
             <option value="./sounds/hihat-808.wav">808 Hihat</option>
+            <option value="./sounds/hihat-vinyl02.wav">Hihat Vinyl</option>
           </select>
         </div>
         <div class="hihat">

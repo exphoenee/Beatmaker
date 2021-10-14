@@ -134,7 +134,6 @@ class DrumKit {
     this.createSequencer();
     this.createSequenceControls();
 
-    this.pads = document.querySelectorAll(".pad");
     this.playBtn = document.querySelector(".play");
     this.currentKick = "./sounds/kick-classic.wav";
     this.currentSnare = "./sounds/snare-acoustic01.wav";
@@ -287,23 +286,42 @@ class DrumKit {
       attrs: { class: ["pads", this.drumNames[drumIndex]] },
       parent: parent,
     });
+
     for (let parentIndex = 0; parentIndex < this.padNr; parentIndex++) {
-      this.createPad({
-        drumIndex: drumIndex,
-        padIndex: parentIndex,
-        parent: pads,
-      });
+      this.pads = [];
+      this.pads.push(
+        this.createPad({
+          drumIndex: drumIndex,
+          padIndex: parentIndex,
+          parent: pads,
+        })
+      );
     }
+
     return pads;
   }
 
   createPad({ drumIndex, padIndex, parent }) {
-    this.createElem({
+    return this.createElem({
       tag: "div",
       attrs: {
         class: ["pad", this.drumNames[drumIndex] + "-pad", "b" + padIndex],
       },
       parent: parent,
+      handleEvent: [
+        {
+          event: "click",
+          cb: function () {
+            this.activePad();
+          },
+        },
+        {
+          event: "animationend",
+          cb: function () {
+            this.style.animation = "";
+          },
+        },
+      ],
     });
   }
 

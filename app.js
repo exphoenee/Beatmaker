@@ -207,6 +207,45 @@ class DrumKit {
       attrs: { class: "sequence-controls" },
       parent: "app",
     });
+
+    this.createElem({
+      tag: "button",
+      content: "Play",
+      attrs: { class: "play" },
+      parent: seqCtrl,
+    });
+
+    const tempoCont = this.createElem({
+      tag: "div",
+      attrs: { class: "tempo" },
+      parent: seqCtrl,
+    });
+
+    this.createElem({
+      tag: "input",
+      attrs: {
+        type: "range",
+        class: "tempo-slider",
+        max: "300",
+        min: "20",
+        value: "150",
+      },
+      parent: tempoCont,
+    });
+
+    const text = this.createElem({
+      tag: "p",
+      content: "Tempo: ",
+      parent: tempoCont,
+    });
+
+    this.createElem({
+      tag: "span",
+      content: "150",
+      attrs: { class: "tempo-nr" },
+      parent: text,
+    });
+
     return seqCtrl;
   }
 

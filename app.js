@@ -128,6 +128,7 @@ class DrumKit {
     this.drumNames = [];
     this.selects = [];
     this.muteBtns = [];
+    this.config = {};
 
     for (let drum in this.soundClips) {
       this.drumNames.push(drum);
@@ -318,6 +319,16 @@ class DrumKit {
     });
     this.createTrackController({ parent: track, drumIndex: drumIndex });
     this.createPadContainer({ parent: track, drumIndex: drumIndex });
+
+    this.createElem({
+      tag: "audio",
+      attrs: {
+        class: this.drumNames[drumIndex] + "-sound",
+        src: "./sounds/" + this.drumNames[drumIndex] + ".wav",
+      },
+      parent: track,
+    });
+
     return track;
   }
 

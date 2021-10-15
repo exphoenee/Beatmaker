@@ -594,7 +594,7 @@ class DrumKit {
     this.bpm = e.target.value;
     clearInterval(this.isPlaying);
     this.isPlaying = null;
-    if (playBtn.classList.contains("active")) {
+    if (this.playBtn.classList.contains("active")) {
       this.start();
     }
   }
@@ -622,7 +622,6 @@ class DrumKit {
     });
   }
   addDrum() {
-    console.log();
     if (!this.config.includes(this.drumSelect.value)) {
       this.config.push(this.drumSelect.value);
       this.createTrack({ drum: this.drumSelect.value, parent: this.sequencer });

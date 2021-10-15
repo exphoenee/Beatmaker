@@ -124,11 +124,11 @@ class DrumKit {
 
   constructor(params) {
     this.padNr = params?.pads || 8;
-    this.drums = params?.drums || 6;
+    this.drums = params?.drums || 4;
 
     this.selects = [];
     this.muteBtns = [];
-    this.config = [];
+    this.sounds = [];
 
     this.createSequencer();
     this.createSequenceControls();
@@ -330,7 +330,7 @@ class DrumKit {
       drumNames: drumNames,
     });
 
-    this.createElem({
+    const sound = this.createElem({
       tag: "audio",
       attrs: {
         class: drumNames[drumIndex] + "-sound",
@@ -338,6 +338,8 @@ class DrumKit {
       },
       parent: track,
     });
+
+    this.sounds.push(sound);
 
     return track;
   }

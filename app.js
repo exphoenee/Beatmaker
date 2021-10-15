@@ -155,7 +155,15 @@ class DrumKit {
       }
     }
 
-    if (handleEvent) elem.addEventListener(handleEvent.event, handleEvent.cb);
+    if (handleEvent) {
+      if (!Array.isArray(handleEvent)) {
+        elem.addEventListener(handleEvent.event, handleEvent.cb);
+      } else {
+        handleEvent.forEach((newEvent) => {
+          elem.addEventListener(newEvent.event, newEvent.cb);
+        });
+      }
+    }
 
     elem.innerHTML = content ? content : null;
 
@@ -231,6 +239,20 @@ class DrumKit {
         min: "20",
         value: "150",
       },
+      handleEvent: [
+        {
+          event: "input",
+          cb: (e) => {
+            this.changeTempo(e);
+          },
+        },
+        {
+          event: "change",
+          cb: (e) => {
+            this.updateTempo(e);
+          },
+        },
+      ],
       parent: tempoCont,
     });
 
@@ -240,7 +262,7 @@ class DrumKit {
       parent: tempoCont,
     });
 
-    this.createElem({
+    this.tempoText = this.createElem({
       tag: "span",
       content: "150",
       attrs: { class: "tempo-nr" },
@@ -267,7 +289,7 @@ class DrumKit {
     const muteBtn = this.createElem({
       tag: "button",
       content: '<i class="fas fa-volume-mute"></i>',
-      attrs: { class: ["mute", drumNames[drumIndex] + "-volume"] },
+      attrs: { class: ["mute"], id: drumNames[drumIndex] + "-mute" },
       parent: control,
       handleEvent: {
         event: "click",
@@ -349,7 +371,7 @@ class DrumKit {
   createPadContainer({ drumNames, drumIndex, parent }) {
     const pads = this.createElem({
       tag: "div",
-      attrs: { class: ["pads", drumNames[drumIndex]] },
+      attrs: { class: ["pads", drumNames[drumIndex] + "-pads"] },
       parent: parent,
     });
 
@@ -446,38 +468,16 @@ class DrumKit {
     console.log(selectionValue);
   }
   mute(e) {
-    const muteIndex = e.target.getAttribute("data-track");
     e.target.classList.toggle("active");
-    if (e.target.classList.contains("active")) {
-      switch (muteIndex) {
-        case "0":
-          this.kickAudio.volume = 0;
-          break;
-        case "1":
-          this.snareAudio.volume = 0;
-          break;
-        case "2":
-          this.hihatAudio.volume = 0;
-          break;
-      }
-    } else {
-      switch (muteIndex) {
-        case "0":
-          this.kickAudio.volume = 1;
-          break;
-        case "1":
-          this.snareAudio.volume = 1;
-          break;
-        case "2":
-          this.hihatAudio.volume = 1;
-          break;
-      }
-    }
+
+    const mutedSound = this.sounds.filter((sound) => {
+      return sound.id.split("-")[0] === e.target.id.split("-")[0];
+    })[0];
+
+    mutedSound.volume = e.target.classList.contains("active") ? 0 : 1;
   }
   changeTempo(e) {
-    const tempoText = document.querySelector(".tempo-nr");
-
-    tempoText.innerText = e.target.value;
+    this.tempoText.innerText = e.target.value;
   }
   updateTempo(e) {
     this.bpm = e.target.value;
@@ -491,11 +491,3 @@ class DrumKit {
 }
 
 const drumKit = new DrumKit();
-
-drumKit.tempoSlider.addEventListener("input", function (e) {
-  drumKit.changeTempo(e);
-});
-
-drumKit.tempoSlider.addEventListener("change", function (e) {
-  drumKit.updateTempo(e);
-});

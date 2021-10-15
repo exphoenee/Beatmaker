@@ -127,6 +127,7 @@ class DrumKit {
     this.padNr = params?.pads || 8;
     this.drums = params?.drums || 4;
 
+    this.tracks = [];
     this.selects = [];
     this.muteBtns = [];
     this.sounds = [];
@@ -191,6 +192,31 @@ class DrumKit {
       tag: "div",
       attrs: { class: "soundborad-editor" },
       parent: this.mainparent,
+    });
+    const drumSelect = this.createElem({
+      tag: "select",
+      attrs: { class: "select-drum" },
+      parent: editor,
+    });
+    for (let drums in this.soundClips) {
+      this.createElem({
+        tag: "option",
+        content: drums,
+        value: drums,
+        parent: drumSelect,
+      });
+    }
+    this.createElem({
+      tag: "button",
+      content: '<i class="fas fa-plus-square"></i>',
+      attrs: { class: ["add-drum", "icon-btn"] },
+      enentHandler: {
+        event: "click",
+        cb: () => {
+          addDrum();
+        },
+      },
+      parent: editor,
     });
   }
 
@@ -303,12 +329,31 @@ class DrumKit {
     const muteBtn = this.createElem({
       tag: "button",
       content: '<i class="fas fa-volume-mute"></i>',
-      attrs: { class: ["mute"], id: drumNames[drumIndex] + "-mute" },
+      attrs: {
+        class: ["mute", "icon-btn"],
+        id: drumNames[drumIndex] + "-mute",
+      },
       parent: control,
       handleEvent: {
         event: "click",
         cb: (e) => {
           this.mute(e);
+        },
+      },
+    });
+
+    this.createElem({
+      tag: "button",
+      content: '<i class="fas fa-trash-alt"></i>',
+      attrs: {
+        class: ["remove", "icon-btn"],
+        id: drumNames[drumIndex] + "-remove",
+      },
+      parent: control,
+      handleEvent: {
+        event: "click",
+        cb: (e) => {
+          this.removeDrum(e);
         },
       },
     });
@@ -350,9 +395,15 @@ class DrumKit {
   createTrack({ drumIndex, parent, drumNames }) {
     const track = this.createElem({
       tag: "div",
-      attrs: { class: ["track", drumNames[drumIndex] + "-track"] },
+      attrs: {
+        class: "track",
+        id: drumNames[drumIndex] + "-track",
+      },
       parent: parent,
     });
+    this.tracks.push(track);
+    console.log(this.tracks);
+
     this.createTrackController({
       parent: track,
       drumIndex: drumIndex,
@@ -500,6 +551,15 @@ class DrumKit {
       this.start();
     }
   }
+  removeDrum(e) {
+    console.log(this.tracks);
+    this.tracks.filter((track) => {
+      console.log(track.id);
+      console.log(e.target.id.split("-")[0] + "-track");
+      return track.id === e.target.id.split("-")[0] + "-track";
+    })[0];
+  }
+  addDrum() {}
 }
 
 const drumKit = new DrumKit();

@@ -602,6 +602,7 @@ class DrumKit {
       return drumToDelete !== drum;
     });
 
+    /*
     this.tracks
       .filter((track) => {
         return track.id === drumToDelete + "-track";
@@ -617,11 +618,16 @@ class DrumKit {
         return elem.id !== drumToDelete + "-" + filter;
       });
     });
+    */
+    this.renderBeatmaker();
   }
   addDrum() {
     if (!this.config.includes(this.drumSelect.value)) {
       this.config.push(this.drumSelect.value);
+      /*
       this.createTrack({ drum: this.drumSelect.value, parent: this.sequencer });
+      */
+      this.renderBeatmaker();
     } else {
       console.error(this.drumSelect.value + " is already added!");
     }

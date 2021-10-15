@@ -123,6 +123,7 @@ class DrumKit {
   };
 
   constructor(params) {
+    this.mainparent = params?.parent || "app";
     this.padNr = params?.pads || 8;
     this.drums = params?.drums || 4;
 
@@ -131,6 +132,7 @@ class DrumKit {
     this.sounds = [];
     this.pads = [];
 
+    this.createEditor();
     this.createSequencer();
     this.createSequenceControls();
 
@@ -184,6 +186,14 @@ class DrumKit {
     return elem;
   }
 
+  createEditor() {
+    const editor = this.createElem({
+      tag: "div",
+      attrs: { class: "soundborad-editor" },
+      parent: this.mainparent,
+    });
+  }
+
   createSequencer() {
     let drumNames = [];
     for (let drum in this.soundClips) {
@@ -193,7 +203,7 @@ class DrumKit {
     const sequencer = this.createElem({
       tag: "div",
       attrs: { class: "sequencer" },
-      parent: "app",
+      parent: this.mainparent,
     });
 
     for (let drumIndex = 0; drumIndex < this.drums; drumIndex++) {
@@ -211,7 +221,7 @@ class DrumKit {
     const seqCtrl = this.createElem({
       tag: "div",
       attrs: { class: "sequence-controls" },
-      parent: "app",
+      parent: this.mainparent,
     });
 
     this.playBtn = this.createElem({

@@ -11,11 +11,27 @@ i,
 svg {
   pointer-events: none;
 }
-
+.soundborad-editor {
+  display: flex;
+  justify-content: center;
+  align-items: end;
+  margin: 1rem;
+}
+.form-control {
+  display: flex;
+  flex-direction: column;
+}
+.title {
+  width: 240px;
+  text-align: center;
+}
 .pad {
-  width: 5rem;
-  height: 5rem;
-  margin: 1rem 0.5rem;
+  width: 3rem;
+  height: 3rem;
+  padding: 0;
+  border-radius: 0.3rem;
+  transition: all 0.5s ease;
+  margin: 0rem 0.5rem;
   cursor: pointer;
   background: rgb(160, 211, 224);
 }
@@ -40,6 +56,7 @@ svg {
   display: flex;
   align-items: center;
   width: 70%;
+  margin-bottom: 1rem;
   justify-content: space-between;
 }
 .pads {
@@ -57,6 +74,8 @@ svg {
 }
 .icon-btn {
   border-radius: 0.3rem;
+  width: 3rem;
+  height: 3rem;
   padding: 1rem;
   border: none;
   margin: 1px;
@@ -67,14 +86,17 @@ svg {
   transition: all 0.5s ease;
 }
 
-.pad {
-  border-radius: 0.3rem;
-  transition: all 0.5s ease;
+label {
+  font-size: 1.5rem;
+  text-align: center;
 }
-
-select {
+select,
+input {
+  width: 10rem;
   padding: 1rem;
-  font-size: 1rem;
+  font-size: 1.5rem;
+  text-align: center;
+  border-radius: 0.5rem;
 }
 
 .mute.active {

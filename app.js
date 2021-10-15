@@ -133,17 +133,9 @@ class DrumKit {
     this.createSequencer();
     this.createSequenceControls();
 
-    /**/
-    this.currentKick = "./sounds/kick-classic.wav";
-    this.currentSnare = "./sounds/snare-acoustic01.wav";
-    this.currentHihat = "./sounds/hihat.acoustic01.wav";
-    this.kickAudio = document.querySelector(".kick-sound");
-    this.snareAudio = document.querySelector(".snare-sound");
-    this.hihatAudio = document.querySelector(".hihat-sound");
     this.index = 0;
     this.bpm = 150;
     this.isPlaying = null;
-    this.tempoSlider = document.querySelector(".tempo-slider");
   }
 
   /* rendering general HTML element */
@@ -230,7 +222,7 @@ class DrumKit {
       parent: seqCtrl,
     });
 
-    this.createElem({
+    this.tempoSlider = this.createElem({
       tag: "input",
       attrs: {
         type: "range",
@@ -289,7 +281,10 @@ class DrumKit {
 
     const drumType = this.createElem({
       tag: "select",
-      attrs: { name: "kick-select", id: "kick-select" },
+      attrs: {
+        name: drumNames[drumIndex] + "-select",
+        id: drumNames[drumIndex] + "-select",
+      },
       parent: control,
       handleEvent: {
         event: "change",
@@ -305,7 +300,10 @@ class DrumKit {
       this.createElem({
         tag: "option",
         content: soundClip,
-        attrs: { value: "./sounds/" + soundClip + ".wav" },
+        attrs: {
+          value:
+            "./sounds/" + this.soundClips[drumNames[drumIndex]][soundClip].file,
+        },
         parent: drumType,
       });
     }
@@ -330,11 +328,15 @@ class DrumKit {
       drumNames: drumNames,
     });
 
+    const selectedSound = this.selects.filter((select) => {
+      return select.id.split("-")[0] === drumNames[drumIndex];
+    })[0].value;
+
     const sound = this.createElem({
       tag: "audio",
       attrs: {
-        class: drumNames[drumIndex] + "-sound",
-        src: "./sounds/" + drumNames[drumIndex] + ".wav",
+        id: drumNames[drumIndex] + "-sound",
+        src: selectedSound,
       },
       parent: track,
     });
@@ -423,8 +425,6 @@ class DrumKit {
     }
   }
   updateBtn() {
-    //NULL
-
     if (!this.isPlaying) {
       this.playBtn.innerText = "Stop";
       this.playBtn.classList.add("active");
@@ -436,17 +436,14 @@ class DrumKit {
   changeSound(e) {
     const selectionName = e.target.name;
     const selectionValue = e.target.value;
-    switch (selectionName) {
-      case "kick-select":
-        this.kickAudio.src = selectionValue;
-        break;
-      case "snare-select":
-        this.snareAudio.src = selectionValue;
-        break;
-      case "hihat-select":
-        this.hihatAudio.src = selectionValue;
-        break;
-    }
+
+    const currSound = this.sounds.filter((sound) => {
+      return sound.id.split("-")[0] === selectionName.split("-")[0];
+    })[0];
+
+    currSound.src = selectionValue;
+
+    console.log(selectionValue);
   }
   mute(e) {
     const muteIndex = e.target.getAttribute("data-track");

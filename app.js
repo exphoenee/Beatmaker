@@ -482,8 +482,8 @@ class DrumKit {
 
     //Loop over the pads
     activeBars.forEach((bar) => {
+      bar.style.animation = `playTrack 0.3s alternate ease-in-out 2`;
       if (bar.classList.contains("active")) {
-        bar.style.animation = `playTrack 0.3s alternate ease-in-out 2`;
         this.sounds
           .filter((sound) => {
             return sound.id.split("-")[0] === bar.id.split("-")[0];

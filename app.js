@@ -402,7 +402,6 @@ class DrumKit {
       parent: parent,
     });
     this.tracks.push(track);
-    console.log(this.tracks);
 
     this.createTrackController({
       parent: track,
@@ -552,12 +551,19 @@ class DrumKit {
     }
   }
   removeDrum(e) {
+    this.tracks
+      .filter((track) => {
+        return track.id === e.target.id.split("-")[0] + "-track";
+      })
+      .forEach((trackToDelete) => {
+        trackToDelete.remove();
+      });
+
+    this.tracks = this.tracks.filter((track) => {
+      return track.id !== e.target.id.split("-")[0] + "-track";
+    });
+
     console.log(this.tracks);
-    this.tracks.filter((track) => {
-      console.log(track.id);
-      console.log(e.target.id.split("-")[0] + "-track");
-      return track.id === e.target.id.split("-")[0] + "-track";
-    })[0];
   }
   addDrum() {}
 }

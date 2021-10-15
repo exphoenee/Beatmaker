@@ -128,6 +128,16 @@ class DrumKit {
     this.drums = params?.drums || 4;
     this.drumSelect = null;
 
+    this.drumNames = [];
+    for (let drum in this.soundClips) {
+      this.drumNames.push(drum);
+    }
+
+    this.config = [];
+    for (let drumIndex = 0; drumIndex < this.drums; drumIndex++) {
+      this.config.push(this.drumNames[drumIndex]);
+    }
+
     this.tracks = [];
     this.selects = [];
     this.muteBtns = [];
@@ -135,7 +145,7 @@ class DrumKit {
     this.pads = [];
 
     this.createEditor();
-    this.createSequencer();
+    this.sequencer = this.createSequencer();
     this.createSequenceControls();
 
     this.index = 0;
@@ -222,24 +232,18 @@ class DrumKit {
   }
 
   createSequencer() {
-    let drumNames = [];
-    for (let drum in this.soundClips) {
-      drumNames.push(drum);
-    }
-
     const sequencer = this.createElem({
       tag: "div",
       attrs: { class: "sequencer" },
       parent: this.mainparent,
     });
 
-    for (let drumIndex = 0; drumIndex < this.drums; drumIndex++) {
+    this.config.forEach((drum) => {
       this.createTrack({
-        drumNames: drumNames,
         parent: sequencer,
-        drumIndex: drumIndex,
+        drum: drum,
       });
-    }
+    });
 
     return sequencer;
   }
@@ -313,7 +317,7 @@ class DrumKit {
     return seqCtrl;
   }
 
-  createTrackController({ drumNames, parent, drumIndex }) {
+  createTrackController({ parent, drum }) {
     const control = this.createElem({
       tag: "div",
       attrs: { class: "controls" },
@@ -322,7 +326,7 @@ class DrumKit {
 
     this.createElem({
       tag: "h1",
-      content: drumNames[drumIndex],
+      content: drum,
       attrs: { class: "controls" },
       parent: control,
     });
@@ -332,7 +336,7 @@ class DrumKit {
       content: '<i class="fas fa-volume-mute"></i>',
       attrs: {
         class: ["mute", "icon-btn"],
-        id: drumNames[drumIndex] + "-muteBtn",
+        id: drum + "-muteBtn",
       },
       parent: control,
       handleEvent: {
@@ -348,7 +352,7 @@ class DrumKit {
       content: '<i class="fas fa-trash-alt"></i>',
       attrs: {
         class: ["remove", "icon-btn"],
-        id: drumNames[drumIndex] + "-remove",
+        id: drum + "-remove",
       },
       parent: control,
       handleEvent: {
@@ -364,8 +368,8 @@ class DrumKit {
     const drumType = this.createElem({
       tag: "select",
       attrs: {
-        name: drumNames[drumIndex] + "-select",
-        id: drumNames[drumIndex] + "-select",
+        name: drum + "-select",
+        id: drum + "-select",
       },
       parent: control,
       handleEvent: {
@@ -378,13 +382,12 @@ class DrumKit {
 
     this.selects.push(drumType);
 
-    for (let soundClip in this.soundClips[drumNames[drumIndex]]) {
+    for (let soundClip in this.soundClips[drum]) {
       this.createElem({
         tag: "option",
         content: soundClip,
         attrs: {
-          value:
-            "./sounds/" + this.soundClips[drumNames[drumIndex]][soundClip].file,
+          value: "./sounds/" + this.soundClips[drum][soundClip].file,
         },
         parent: drumType,
       });
@@ -393,12 +396,12 @@ class DrumKit {
     return control;
   }
 
-  createTrack({ drumIndex, parent, drumNames }) {
+  createTrack({ drum, parent }) {
     const track = this.createElem({
       tag: "div",
       attrs: {
         class: "track",
-        id: drumNames[drumIndex] + "-track",
+        id: drum + "-track",
       },
       parent: parent,
     });
@@ -406,23 +409,21 @@ class DrumKit {
 
     this.createTrackController({
       parent: track,
-      drumIndex: drumIndex,
-      drumNames: drumNames,
+      drum: drum,
     });
     this.createPadContainer({
       parent: track,
-      drumIndex: drumIndex,
-      drumNames: drumNames,
+      drum: drum,
     });
 
     const selectedSound = this.selects.filter((select) => {
-      return select.id.split("-")[0] === drumNames[drumIndex];
+      return select.id.split("-")[0] === drum;
     })[0].value;
 
     const sound = this.createElem({
       tag: "audio",
       attrs: {
-        id: drumNames[drumIndex] + "-sound",
+        id: drum + "-sound",
         src: selectedSound,
       },
       parent: track,
@@ -433,20 +434,19 @@ class DrumKit {
     return track;
   }
 
-  createPadContainer({ drumNames, drumIndex, parent }) {
+  createPadContainer({ drum, parent }) {
     const pads = this.createElem({
       tag: "div",
-      attrs: { class: ["pads", drumNames[drumIndex] + "-pads"] },
+      attrs: { class: ["pads", drum + "-pads"] },
       parent: parent,
     });
 
     for (let parentIndex = 0; parentIndex < this.padNr; parentIndex++) {
       this.pads.push(
         this.createPad({
-          drumIndex: drumIndex,
+          drum: drum,
           padIndex: parentIndex,
           parent: pads,
-          drumNames: drumNames,
         })
       );
     }
@@ -454,11 +454,11 @@ class DrumKit {
     return pads;
   }
 
-  createPad({ drumIndex, padIndex, parent, drumNames }) {
+  createPad({ drum, padIndex, parent }) {
     const pad = this.createElem({
       tag: "div",
       attrs: {
-        id: drumNames[drumIndex] + "-pad",
+        id: drum + "-pad",
         class: ["pad", "b" + padIndex],
       },
       parent: parent,
@@ -554,6 +554,10 @@ class DrumKit {
   removeDrum(e) {
     const drumToDelete = e.target.id.split("-")[0];
 
+    this.config = this.config.filter((drum) => {
+      return drumToDelete !== drum;
+    });
+
     this.tracks
       .filter((track) => {
         return track.id === drumToDelete + "-track";
@@ -571,7 +575,14 @@ class DrumKit {
     });
   }
   addDrum() {
-    console.log(this.drumSelect.value);
+    console.log();
+    if (!this.config.includes(this.drumSelect.value)) {
+      this.config.push(this.drumSelect.value);
+      console.log(this.config);
+    } else {
+      console.error(this.drumSelect.value + "is already added!");
+    }
+    this.createTrack({ drum: this.drumSelect.value, parent: this.sequencer });
   }
 }
 

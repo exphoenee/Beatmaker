@@ -533,12 +533,20 @@ class DrumKit {
   }
   mute(e) {
     e.target.classList.toggle("active");
+    const mutedDrum = e.target.id.split("-")[0];
 
     const mutedSound = this.sounds.filter((sound) => {
-      return sound.id.split("-")[0] === e.target.id.split("-")[0];
+      return sound.id.split("-")[0] === mutedDrum;
     })[0];
 
     mutedSound.volume = e.target.classList.contains("active") ? 0 : 1;
+
+    const mutedPads = this.pads.filter((pad) => {
+      return pad.id.split("-")[0] === mutedDrum;
+    });
+    mutedPads.forEach((mutedPad) => {
+      mutedPad.classList.toggle("muted");
+    });
   }
   changeTempo(e) {
     this.tempoText.innerText = e.target.value;
@@ -578,11 +586,10 @@ class DrumKit {
     console.log();
     if (!this.config.includes(this.drumSelect.value)) {
       this.config.push(this.drumSelect.value);
-      console.log(this.config);
+      this.createTrack({ drum: this.drumSelect.value, parent: this.sequencer });
     } else {
-      console.error(this.drumSelect.value + "is already added!");
+      console.error(this.drumSelect.value + " is already added!");
     }
-    this.createTrack({ drum: this.drumSelect.value, parent: this.sequencer });
   }
 }
 

@@ -123,7 +123,7 @@ class DrumKit {
   };
 
   constructor(params) {
-    this.mainparent = params?.parent || "app";
+    this.mainparent = params?.parent || document.querySelector("#app");
     this.padNr = params?.pads || 8;
     this.drums = params?.drums || 4;
     this.drumSelect = null;
@@ -138,15 +138,7 @@ class DrumKit {
       this.config.push(this.drumNames[drumIndex]);
     }
 
-    this.tracks = [];
-    this.selects = [];
-    this.muteBtns = [];
-    this.sounds = [];
-    this.pads = [];
-
-    this.createEditor();
-    this.sequencer = this.createSequencer();
-    this.createSequenceControls();
+    this.renderBeatmaker();
 
     this.index = 0;
     this.bpm = 150;
@@ -198,6 +190,19 @@ class DrumKit {
     return elem;
   }
 
+  renderBeatmaker() {
+    this.tracks = [];
+    this.selects = [];
+    this.muteBtns = [];
+    this.sounds = [];
+    this.pads = [];
+
+    this.mainparent.innerHTML = "";
+
+    this.createEditor();
+    this.sequencer = this.createSequencer();
+    this.createSequenceControls();
+  }
   createEditor() {
     const editor = this.createElem({
       tag: "div",
@@ -218,6 +223,13 @@ class DrumKit {
     this.barNumber = this.createElem({
       tag: "input",
       attrs: { id: "bar-number", type: "number", value: this.padNr },
+      handleEvent: {
+        event: "change",
+        cb: (e) => {
+          this.padNr = e.target.value;
+          this.renderBeatmaker();
+        },
+      },
       parent: formCont,
     });
     formCont = this.createElem({

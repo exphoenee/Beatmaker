@@ -331,7 +331,7 @@ class DrumKit {
       content: '<i class="fas fa-volume-mute"></i>',
       attrs: {
         class: ["mute", "icon-btn"],
-        id: drumNames[drumIndex] + "-mute",
+        id: drumNames[drumIndex] + "-muteBtn",
       },
       parent: control,
       handleEvent: {
@@ -551,19 +551,46 @@ class DrumKit {
     }
   }
   removeDrum(e) {
+    const drumToDelete = e.target.id.split("-")[0];
+
     this.tracks
       .filter((track) => {
-        return track.id === e.target.id.split("-")[0] + "-track";
+        return track.id === drumToDelete + "-track";
       })
       .forEach((trackToDelete) => {
         trackToDelete.remove();
       });
 
-    this.tracks = this.tracks.filter((track) => {
-      return track.id !== e.target.id.split("-")[0] + "-track";
+    /* remove form the array */
+    const toFilter = ["track", "sound", "muteBtn", "select", "pad"];
+
+    toFilter.forEach((filter) => {
+      this[filter + "s"] = this[filter + "s"].filter((elem) => {
+        return elem.id !== drumToDelete + "-" + filter;
+      });
     });
 
-    console.log(this.tracks);
+    /*
+    this.tracks = this.tracks.filter((track) => {
+      return track.id !== drumToDelete + "-track";
+    });
+
+    this.sounds = this.sounds.filter((sound) => {
+      return sound.id !== drumToDelete + "-sound";
+    });
+
+    this.muteBtns = this.muteBtns.filter((muteBtn) => {
+      return muteBtn.id !== drumToDelete + "-mute";
+    });
+
+    this.selects = this.selects.filter((select) => {
+      return select.id !== drumToDelete + "-select";
+    });
+
+    this.pads = this.pads.filter((pad) => {
+      return pad.id !== drumToDelete + "-pad";
+    });
+*/
   }
   addDrum() {}
 }

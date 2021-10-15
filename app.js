@@ -204,10 +204,37 @@ class DrumKit {
       attrs: { class: "soundborad-editor" },
       parent: this.mainparent,
     });
+    let formCont = this.createElem({
+      tag: "div",
+      attrs: { class: "form-control" },
+      parent: editor,
+    });
+    this.createElem({
+      tag: "label",
+      content: "# of bars",
+      attrs: { class: "bar-number", for: "bar-number" },
+      parent: formCont,
+    });
+    this.barNumber = this.createElem({
+      tag: "input",
+      attrs: { id: "bar-number", type: "number", value: this.padNr },
+      parent: formCont,
+    });
+    formCont = this.createElem({
+      tag: "div",
+      attrs: { class: "form-control" },
+      parent: editor,
+    });
+    this.createElem({
+      tag: "label",
+      content: "Drum types",
+      attrs: { class: "bar-number", for: "drum-type" },
+      parent: formCont,
+    });
     this.drumSelect = this.createElem({
       tag: "select",
-      attrs: { class: "select-drum" },
-      parent: editor,
+      attrs: { class: "select-drum", id: "drum-type" },
+      parent: formCont,
     });
     for (let drums in this.soundClips) {
       this.createElem({
@@ -327,7 +354,7 @@ class DrumKit {
     this.createElem({
       tag: "h1",
       content: drum,
-      attrs: { class: "controls" },
+      attrs: { class: "title" },
       parent: control,
     });
 

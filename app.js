@@ -155,14 +155,17 @@ class DrumKit {
       }
     }
 
+    let eventsToAdd = [];
+
     if (handleEvent) {
-      if (!Array.isArray(handleEvent)) {
-        elem.addEventListener(handleEvent.event, handleEvent.cb);
+      if (Array.isArray(handleEvent)) {
+        eventsToAdd = [...handleEvent];
       } else {
-        handleEvent.forEach((newEvent) => {
-          elem.addEventListener(newEvent.event, newEvent.cb);
-        });
+        eventsToAdd.push(handleEvent);
       }
+      eventsToAdd.forEach((newEvent) => {
+        elem.addEventListener(newEvent.event, newEvent.cb);
+      });
     }
 
     elem.innerHTML = content ? content : null;
@@ -464,8 +467,6 @@ class DrumKit {
     })[0];
 
     currSound.src = selectionValue;
-
-    console.log(selectionValue);
   }
   mute(e) {
     e.target.classList.toggle("active");
@@ -483,7 +484,6 @@ class DrumKit {
     this.bpm = e.target.value;
     clearInterval(this.isPlaying);
     this.isPlaying = null;
-    const playBtn = document.querySelector(".play");
     if (playBtn.classList.contains("active")) {
       this.start();
     }

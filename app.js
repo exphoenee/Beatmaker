@@ -253,8 +253,8 @@ class DrumKit {
 
     this.playBtn = this.createElem({
       tag: "button",
-      content: "Play",
-      attrs: { class: "play" },
+      content: '<i class="fas fa-play"></i>',
+      attrs: { class: ["play", "icon-btn"] },
       parent: seqCtrl,
       handleEvent: {
         event: "click",
@@ -514,10 +514,10 @@ class DrumKit {
   }
   updateBtn() {
     if (!this.isPlaying) {
-      this.playBtn.innerText = "Stop";
+      this.playBtn.innerHTML = '<i class="fas fa-pause"></i>';
       this.playBtn.classList.add("active");
     } else {
-      this.playBtn.innerText = "Play";
+      this.playBtn.innerHTML = '<i class="fas fa-play"></i>';
       this.playBtn.classList.remove("active");
     }
   }

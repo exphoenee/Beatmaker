@@ -126,6 +126,8 @@ class DrumKit {
     this.padNr = params?.pads || 8;
     this.drums = params?.drums || 3;
     this.drumNames = [];
+    this.selects = [];
+    this.muteBtns = [];
 
     for (let drum in this.soundClips) {
       this.drumNames.push(drum);
@@ -144,7 +146,6 @@ class DrumKit {
     this.index = 0;
     this.bpm = 150;
     this.isPlaying = null;
-    this.selects = document.querySelectorAll("select");
     this.tempoSlider = document.querySelector(".tempo-slider");
   }
 
@@ -260,6 +261,7 @@ class DrumKit {
       attrs: { class: "controls" },
       parent: parent,
     });
+
     this.createElem({
       tag: "h1",
       content: this.drumNames[drumIndex],
@@ -267,7 +269,7 @@ class DrumKit {
       parent: control,
     });
 
-    this.muteBtns = this.createElem({
+    const muteBtn = this.createElem({
       tag: "button",
       content: '<i class="fas fa-volume-mute"></i>',
       attrs: { class: ["mute", this.drumNames[drumIndex] + "-volume"] },
@@ -280,6 +282,8 @@ class DrumKit {
       },
     });
 
+    this.muteBtns.push(muteBtn);
+
     const drumType = this.createElem({
       tag: "select",
       attrs: { name: "kick-select", id: "kick-select" },
@@ -291,6 +295,8 @@ class DrumKit {
         },
       },
     });
+
+    this.selects.push(drumType);
 
     for (let soundClip in this.soundClips[this.drumNames[drumIndex]]) {
       this.createElem({

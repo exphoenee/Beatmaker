@@ -126,6 +126,7 @@ class DrumKit {
     this.mainparent = params?.parent || "app";
     this.padNr = params?.pads || 8;
     this.drums = params?.drums || 4;
+    this.drumSelect = null;
 
     this.tracks = [];
     this.selects = [];
@@ -193,7 +194,7 @@ class DrumKit {
       attrs: { class: "soundborad-editor" },
       parent: this.mainparent,
     });
-    const drumSelect = this.createElem({
+    this.drumSelect = this.createElem({
       tag: "select",
       attrs: { class: "select-drum" },
       parent: editor,
@@ -203,17 +204,17 @@ class DrumKit {
         tag: "option",
         content: drums,
         value: drums,
-        parent: drumSelect,
+        parent: this.drumSelect,
       });
     }
     this.createElem({
       tag: "button",
       content: '<i class="fas fa-plus-square"></i>',
       attrs: { class: ["add-drum", "icon-btn"] },
-      enentHandler: {
+      handleEvent: {
         event: "click",
         cb: () => {
-          addDrum();
+          this.addDrum();
         },
       },
       parent: editor,
@@ -561,7 +562,6 @@ class DrumKit {
         trackToDelete.remove();
       });
 
-    /* remove form the array */
     const toFilter = ["track", "sound", "muteBtn", "select", "pad"];
 
     toFilter.forEach((filter) => {
@@ -569,30 +569,10 @@ class DrumKit {
         return elem.id !== drumToDelete + "-" + filter;
       });
     });
-
-    /*
-    this.tracks = this.tracks.filter((track) => {
-      return track.id !== drumToDelete + "-track";
-    });
-
-    this.sounds = this.sounds.filter((sound) => {
-      return sound.id !== drumToDelete + "-sound";
-    });
-
-    this.muteBtns = this.muteBtns.filter((muteBtn) => {
-      return muteBtn.id !== drumToDelete + "-mute";
-    });
-
-    this.selects = this.selects.filter((select) => {
-      return select.id !== drumToDelete + "-select";
-    });
-
-    this.pads = this.pads.filter((pad) => {
-      return pad.id !== drumToDelete + "-pad";
-    });
-*/
   }
-  addDrum() {}
+  addDrum() {
+    console.log(this.drumSelect.value);
+  }
 }
 
 const drumKit = new DrumKit();

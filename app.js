@@ -129,6 +129,7 @@ class DrumKit {
     this.selects = [];
     this.muteBtns = [];
     this.sounds = [];
+    this.pads = [];
 
     this.createSequencer();
     this.createSequenceControls();
@@ -379,7 +380,6 @@ class DrumKit {
     });
 
     for (let parentIndex = 0; parentIndex < this.padNr; parentIndex++) {
-      this.pads = [];
       this.pads.push(
         this.createPad({
           drumIndex: drumIndex,
@@ -397,7 +397,8 @@ class DrumKit {
     const pad = this.createElem({
       tag: "div",
       attrs: {
-        class: ["pad", drumNames[drumIndex] + "-pad", "b" + padIndex],
+        id: drumNames[drumIndex] + "-pad",
+        class: ["pad", "b" + padIndex],
       },
       parent: parent,
     });
@@ -412,26 +413,27 @@ class DrumKit {
     this.classList.toggle("active");
   }
   repeat() {
-    let step = this.index % 8;
-    const activeBars = document.querySelectorAll(`.b${step}`);
+    let step = this.index % this.padNr;
+
+    const activeBars = this.pads.filter((pad) => {
+      return pad.classList.contains(`b${step}`);
+    });
+
     //Loop over the pads
     activeBars.forEach((bar) => {
-      bar.style.animation = `playTrack 0.3s alternate ease-in-out 2`;
       if (bar.classList.contains("active")) {
-        if (bar.classList.contains("kick-pad")) {
-          this.kickAudio.currentTime = 0;
-          this.kickAudio.play();
-        }
-        if (bar.classList.contains("snare-pad")) {
-          this.snareAudio.currentTime = 0;
-          this.snareAudio.play();
-        }
-        if (bar.classList.contains("hihat-pad")) {
-          this.hihatAudio.currentTime = 0;
-          this.hihatAudio.play();
-        }
+        bar.style.animation = `playTrack 0.3s alternate ease-in-out 2`;
+        this.sounds
+          .filter((sound) => {
+            return sound.id.split("-")[0] === bar.id.split("-")[0];
+          })
+          .forEach((soundToPlay) => {
+            soundToPlay.currentTime = 0;
+            soundToPlay.play();
+          });
       }
     });
+
     this.index++;
   }
   start() {

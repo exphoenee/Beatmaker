@@ -124,15 +124,11 @@ class DrumKit {
 
   constructor(params) {
     this.padNr = params?.pads || 8;
-    this.drums = params?.drums || 3;
-    this.drumNames = [];
+    this.drums = params?.drums || 6;
+
     this.selects = [];
     this.muteBtns = [];
-    this.config = {};
-
-    for (let drum in this.soundClips) {
-      this.drumNames.push(drum);
-    }
+    this.config = [];
 
     this.createSequencer();
     this.createSequenceControls();
@@ -185,6 +181,11 @@ class DrumKit {
   }
 
   createSequencer() {
+    let drumNames = [];
+    for (let drum in this.soundClips) {
+      drumNames.push(drum);
+    }
+
     const sequencer = this.createElem({
       tag: "div",
       attrs: { class: "sequencer" },
@@ -193,6 +194,7 @@ class DrumKit {
 
     for (let drumIndex = 0; drumIndex < this.drums; drumIndex++) {
       this.createTrack({
+        drumNames: drumNames,
         parent: sequencer,
         drumIndex: drumIndex,
       });
@@ -256,7 +258,7 @@ class DrumKit {
     return seqCtrl;
   }
 
-  createTrackController({ parent, drumIndex }) {
+  createTrackController({ drumNames, parent, drumIndex }) {
     const control = this.createElem({
       tag: "div",
       attrs: { class: "controls" },
@@ -265,7 +267,7 @@ class DrumKit {
 
     this.createElem({
       tag: "h1",
-      content: this.drumNames[drumIndex],
+      content: drumNames[drumIndex],
       attrs: { class: "controls" },
       parent: control,
     });
@@ -273,7 +275,7 @@ class DrumKit {
     const muteBtn = this.createElem({
       tag: "button",
       content: '<i class="fas fa-volume-mute"></i>',
-      attrs: { class: ["mute", this.drumNames[drumIndex] + "-volume"] },
+      attrs: { class: ["mute", drumNames[drumIndex] + "-volume"] },
       parent: control,
       handleEvent: {
         event: "click",
@@ -299,7 +301,7 @@ class DrumKit {
 
     this.selects.push(drumType);
 
-    for (let soundClip in this.soundClips[this.drumNames[drumIndex]]) {
+    for (let soundClip in this.soundClips[drumNames[drumIndex]]) {
       this.createElem({
         tag: "option",
         content: soundClip,
@@ -311,20 +313,28 @@ class DrumKit {
     return control;
   }
 
-  createTrack({ drumIndex, parent }) {
+  createTrack({ drumIndex, parent, drumNames }) {
     const track = this.createElem({
       tag: "div",
-      attrs: { class: ["track", this.drumNames[drumIndex] + "-track"] },
+      attrs: { class: ["track", drumNames[drumIndex] + "-track"] },
       parent: parent,
     });
-    this.createTrackController({ parent: track, drumIndex: drumIndex });
-    this.createPadContainer({ parent: track, drumIndex: drumIndex });
+    this.createTrackController({
+      parent: track,
+      drumIndex: drumIndex,
+      drumNames: drumNames,
+    });
+    this.createPadContainer({
+      parent: track,
+      drumIndex: drumIndex,
+      drumNames: drumNames,
+    });
 
     this.createElem({
       tag: "audio",
       attrs: {
-        class: this.drumNames[drumIndex] + "-sound",
-        src: "./sounds/" + this.drumNames[drumIndex] + ".wav",
+        class: drumNames[drumIndex] + "-sound",
+        src: "./sounds/" + drumNames[drumIndex] + ".wav",
       },
       parent: track,
     });
@@ -332,10 +342,10 @@ class DrumKit {
     return track;
   }
 
-  createPadContainer({ drumIndex, parent }) {
+  createPadContainer({ drumNames, drumIndex, parent }) {
     const pads = this.createElem({
       tag: "div",
-      attrs: { class: ["pads", this.drumNames[drumIndex]] },
+      attrs: { class: ["pads", drumNames[drumIndex]] },
       parent: parent,
     });
 
@@ -346,6 +356,7 @@ class DrumKit {
           drumIndex: drumIndex,
           padIndex: parentIndex,
           parent: pads,
+          drumNames: drumNames,
         })
       );
     }
@@ -353,11 +364,11 @@ class DrumKit {
     return pads;
   }
 
-  createPad({ drumIndex, padIndex, parent }) {
+  createPad({ drumIndex, padIndex, parent, drumNames }) {
     const pad = this.createElem({
       tag: "div",
       attrs: {
-        class: ["pad", this.drumNames[drumIndex] + "-pad", "b" + padIndex],
+        class: ["pad", drumNames[drumIndex] + "-pad", "b" + padIndex],
       },
       parent: parent,
     });

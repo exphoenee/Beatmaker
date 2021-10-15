@@ -52,6 +52,9 @@ svg {
   flex: 1;
   margin: 0rem 2rem;
 }
+.muted {
+  opacity: 0.2;
+}
 .icon-btn {
   border-radius: 0.3rem;
   padding: 1rem;

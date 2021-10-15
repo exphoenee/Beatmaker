@@ -134,7 +134,7 @@ class DrumKit {
     this.createSequencer();
     this.createSequenceControls();
 
-    this.playBtn = document.querySelector(".play");
+    /**/
     this.currentKick = "./sounds/kick-classic.wav";
     this.currentSnare = "./sounds/snare-acoustic01.wav";
     this.currentHihat = "./sounds/hihat.acoustic01.wav";
@@ -207,11 +207,18 @@ class DrumKit {
       parent: "app",
     });
 
-    this.createElem({
+    this.playBtn = this.createElem({
       tag: "button",
       content: "Play",
       attrs: { class: "play" },
       parent: seqCtrl,
+      handleEvent: {
+        event: "click",
+        cb: () => {
+          this.updateBtn();
+          this.start();
+        },
+      },
     });
 
     const tempoCont = this.createElem({
@@ -445,20 +452,6 @@ class DrumKit {
 }
 
 const drumKit = new DrumKit();
-
-//Event Listeners
-
-drumKit.pads.forEach((pad) => {
-  pad.addEventListener("click", drumKit.activePad);
-  pad.addEventListener("animationend", function () {
-    this.style.animation = "";
-  });
-});
-
-drumKit.playBtn.addEventListener("click", function () {
-  drumKit.updateBtn();
-  drumKit.start();
-});
 
 drumKit.selects.forEach((select) => {
   select.addEventListener("change", function (e) {

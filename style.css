@@ -52,7 +52,8 @@ svg {
   flex: 1;
   margin: 0rem 2rem;
 }
-.controls button {
+.controls button,
+.add-drum {
   padding: 1rem;
   border: none;
   background: rgb(88, 88, 88);

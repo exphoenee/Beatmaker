@@ -222,12 +222,17 @@ class DrumKit {
     });
     this.barNumber = this.createElem({
       tag: "input",
-      attrs: { id: "bar-number", type: "number", value: this.padNr },
+      attrs: {
+        id: "bar-number",
+        type: "number",
+        min: "4",
+        max: "16",
+        value: this.padNr,
+      },
       handleEvent: {
         event: "change",
         cb: (e) => {
-          this.padNr = e.target.value;
-          this.renderBeatmaker();
+          this.addNewBars(e);
         },
       },
       parent: formCont,
@@ -602,31 +607,19 @@ class DrumKit {
       return drumToDelete !== drum;
     });
 
-    /*
-    this.tracks
-      .filter((track) => {
-        return track.id === drumToDelete + "-track";
-      })
-      .forEach((trackToDelete) => {
-        trackToDelete.remove();
-      });
-
-    const toFilter = ["track", "sound", "muteBtn", "select", "pad"];
-
-    toFilter.forEach((filter) => {
-      this[filter + "s"] = this[filter + "s"].filter((elem) => {
-        return elem.id !== drumToDelete + "-" + filter;
-      });
-    });
-    */
     this.renderBeatmaker();
   }
+
+  addNewBars(e) {
+    this.padNr = Math.min(Math.max(e.target.value, e.target.min), e.target.max);
+
+    this.renderBeatmaker();
+  }
+
   addDrum() {
     if (!this.config.includes(this.drumSelect.value)) {
       this.config.push(this.drumSelect.value);
-      /*
-      this.createTrack({ drum: this.drumSelect.value, parent: this.sequencer });
-      */
+
       this.renderBeatmaker();
     } else {
       console.error(this.drumSelect.value + " is already added!");

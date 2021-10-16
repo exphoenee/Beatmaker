@@ -55,9 +55,8 @@ svg {
 .track {
   display: flex;
   align-items: center;
-  width: 70%;
+  width: 90%;
   margin-bottom: 1rem;
-  justify-content: space-between;
 }
 .pads {
   display: flex;
@@ -66,7 +65,6 @@ svg {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex: 1;
   margin: 0rem 2rem;
 }
 .muted {

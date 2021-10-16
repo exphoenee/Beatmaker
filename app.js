@@ -611,9 +611,27 @@ class DrumKit {
   }
 
   addNewBars(e) {
-    this.padNr = Math.min(Math.max(e.target.value, e.target.min), e.target.max);
+    const oldPadNr = this.padNr;
+    const newPardNr = Math.min(
+      Math.max(e.target.value, e.target.min),
+      e.target.max
+    );
+    this.padNr = newPardNr;
+
+    const map = this.pads.map((pad) => {
+      return pad.classList.contains("active");
+    });
 
     this.renderBeatmaker();
+
+    const colNr = Math.min(oldPadNr, this.padNr);
+    for (let row = 0; row < this.drums; row++) {
+      for (let col = 0; col < colNr; col++) {
+        if (map[(row + 1) * colNr + col]) {
+          this.pads[(row + 1) * colNr + col].classList.add("active");
+        }
+      }
+    }
   }
 
   addDrum() {

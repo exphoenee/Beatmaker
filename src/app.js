@@ -1,0 +1,511 @@
+import soundClips from "./model/soundClips.js";
+
+class DrumKit {
+  /* this is a mock, that comes form node server */
+
+  constructor(params) {
+    this.mainparent = params?.parent || document.querySelector("#app");
+    this.padNr = params?.pads || 8;
+    this.drums = params?.drums || 4;
+    this.drumSelect = null;
+
+    this.drumNames = [];
+    for (let drum in this.soundClips) {
+      this.drumNames.push(drum);
+    }
+
+    this.config = [];
+    for (let drumIndex = 0; drumIndex < this.drums; drumIndex++) {
+      this.config.push(this.drumNames[drumIndex]);
+    }
+
+    this.renderBeatmaker();
+
+    this.index = 0;
+    this.bpm = 150;
+    this.isPlaying = null;
+  }
+
+  /* rendering general HTML element */
+  createElem({ tag, content, attrs, parent, handleEvent }) {
+    let elem = document.createElement(tag);
+    for (let a in attrs) {
+      if (a === "dataset") {
+        for (let data in attrs[a]) {
+          elem.dataset[data] = attrs[a][data];
+        }
+      } else {
+        if (Array.isArray(attrs[a])) {
+          elem.setAttribute(a, attrs[a].join(" "));
+        } else {
+          elem.setAttribute(a, attrs[a]);
+        }
+      }
+    }
+
+    let eventsToAdd = [];
+
+    if (handleEvent) {
+      if (Array.isArray(handleEvent)) {
+        eventsToAdd = [...handleEvent];
+      } else {
+        eventsToAdd.push(handleEvent);
+      }
+      eventsToAdd.forEach((newEvent) => {
+        elem.addEventListener(newEvent.event, newEvent.cb);
+      });
+    }
+
+    elem.innerHTML = content ? content : null;
+
+    if (typeof parent === "string") {
+      parent = [".", "#"]
+        .map((prep) => {
+          return document.querySelector(prep + parent);
+        })
+        .filter((pe) => {
+          return pe !== null;
+        })[0];
+    }
+    parent.appendChild(elem);
+    return elem;
+  }
+
+  renderBeatmaker() {
+    this.tracks = [];
+    this.selects = [];
+    this.muteBtns = [];
+    this.sounds = [];
+    this.pads = [];
+
+    this.mainparent.innerHTML = "";
+
+    this.createEditor();
+    this.sequencer = this.createSequencer();
+    this.createSequenceControls();
+  }
+  createEditor() {
+    const editor = this.createElem({
+      tag: "div",
+      attrs: { class: "soundborad-editor" },
+      parent: this.mainparent,
+    });
+    let formCont = this.createElem({
+      tag: "div",
+      attrs: { class: "form-control" },
+      parent: editor,
+    });
+    this.createElem({
+      tag: "label",
+      content: "# of bars",
+      attrs: { class: "bar-number", for: "bar-number" },
+      parent: formCont,
+    });
+    this.barNumber = this.createElem({
+      tag: "input",
+      attrs: {
+        id: "bar-number",
+        type: "number",
+        min: "4",
+        max: "16",
+        value: this.padNr,
+      },
+      handleEvent: {
+        event: "change",
+        cb: (e) => {
+          this.addNewBars(e);
+        },
+      },
+      parent: formCont,
+    });
+    formCont = this.createElem({
+      tag: "div",
+      attrs: { class: "form-control" },
+      parent: editor,
+    });
+    this.createElem({
+      tag: "label",
+      content: "Drum types",
+      attrs: { class: "bar-number", for: "drum-type" },
+      parent: formCont,
+    });
+    this.drumSelect = this.createElem({
+      tag: "select",
+      attrs: { class: "select-drum", id: "drum-type" },
+      parent: formCont,
+    });
+    for (let drums in this.soundClips) {
+      this.createElem({
+        tag: "option",
+        content: drums,
+        value: drums,
+        parent: this.drumSelect,
+      });
+    }
+    this.createElem({
+      tag: "button",
+      content: '<i class="fas fa-plus-square"></i>',
+      attrs: { class: ["add-drum", "icon-btn"] },
+      handleEvent: {
+        event: "click",
+        cb: () => {
+          this.addDrum();
+        },
+      },
+      parent: editor,
+    });
+  }
+
+  createSequencer() {
+    const sequencer = this.createElem({
+      tag: "div",
+      attrs: { class: "sequencer" },
+      parent: this.mainparent,
+    });
+
+    this.config.forEach((drum) => {
+      this.createTrack({
+        parent: sequencer,
+        drum: drum,
+      });
+    });
+
+    return sequencer;
+  }
+
+  createSequenceControls() {
+    const seqCtrl = this.createElem({
+      tag: "div",
+      attrs: { class: "sequence-controls" },
+      parent: this.mainparent,
+    });
+
+    this.playBtn = this.createElem({
+      tag: "button",
+      content: '<i class="fas fa-play"></i>',
+      attrs: { class: ["play", "icon-btn"] },
+      parent: seqCtrl,
+      handleEvent: {
+        event: "click",
+        cb: () => {
+          this.updateBtn();
+          this.start();
+        },
+      },
+    });
+
+    const tempoCont = this.createElem({
+      tag: "div",
+      attrs: { class: "tempo" },
+      parent: seqCtrl,
+    });
+
+    this.tempoSlider = this.createElem({
+      tag: "input",
+      attrs: {
+        type: "range",
+        class: "tempo-slider",
+        max: "300",
+        min: "20",
+        value: "150",
+      },
+      handleEvent: [
+        {
+          event: "input",
+          cb: (e) => {
+            this.changeTempo(e);
+          },
+        },
+        {
+          event: "change",
+          cb: (e) => {
+            this.updateTempo(e);
+          },
+        },
+      ],
+      parent: tempoCont,
+    });
+
+    const text = this.createElem({
+      tag: "p",
+      content: "Tempo: ",
+      parent: tempoCont,
+    });
+
+    this.tempoText = this.createElem({
+      tag: "span",
+      content: "150",
+      attrs: { class: "tempo-nr" },
+      parent: text,
+    });
+
+    return seqCtrl;
+  }
+
+  createTrackController({ parent, drum }) {
+    const control = this.createElem({
+      tag: "div",
+      attrs: { class: "controls" },
+      parent: parent,
+    });
+
+    this.createElem({
+      tag: "h1",
+      content: drum,
+      attrs: { class: "title" },
+      parent: control,
+    });
+
+    const muteBtn = this.createElem({
+      tag: "button",
+      content: '<i class="fas fa-volume-mute"></i>',
+      attrs: {
+        class: ["mute", "icon-btn"],
+        id: drum + "-muteBtn",
+      },
+      parent: control,
+      handleEvent: {
+        event: "click",
+        cb: (e) => {
+          this.mute(e);
+        },
+      },
+    });
+
+    this.createElem({
+      tag: "button",
+      content: '<i class="fas fa-trash-alt"></i>',
+      attrs: {
+        class: ["remove", "icon-btn"],
+        id: drum + "-remove",
+      },
+      parent: control,
+      handleEvent: {
+        event: "click",
+        cb: (e) => {
+          this.removeDrum(e);
+        },
+      },
+    });
+
+    this.muteBtns.push(muteBtn);
+
+    const drumType = this.createElem({
+      tag: "select",
+      attrs: {
+        name: drum + "-select",
+        id: drum + "-select",
+      },
+      parent: control,
+      handleEvent: {
+        event: "change",
+        cb: (e) => {
+          this.changeSound(e);
+        },
+      },
+    });
+
+    this.selects.push(drumType);
+
+    for (let soundClip in this.soundClips[drum]) {
+      this.createElem({
+        tag: "option",
+        content: soundClip,
+        attrs: {
+          value: "./sounds/" + this.soundClips[drum][soundClip].file,
+        },
+        parent: drumType,
+      });
+    }
+
+    return control;
+  }
+
+  createTrack({ drum, parent }) {
+    const track = this.createElem({
+      tag: "div",
+      attrs: {
+        class: "track",
+        id: drum + "-track",
+      },
+      parent: parent,
+    });
+    this.tracks.push(track);
+
+    this.createTrackController({
+      parent: track,
+      drum: drum,
+    });
+    this.createPadContainer({
+      parent: track,
+      drum: drum,
+    });
+
+    const selectedSound = this.selects.filter((select) => {
+      return select.id.split("-")[0] === drum;
+    })[0].value;
+
+    const sound = this.createElem({
+      tag: "audio",
+      attrs: {
+        id: drum + "-sound",
+        src: selectedSound,
+      },
+      parent: track,
+    });
+
+    this.sounds.push(sound);
+
+    return track;
+  }
+
+  createPadContainer({ drum, parent }) {
+    const pads = this.createElem({
+      tag: "div",
+      attrs: { class: ["pads", drum + "-pads"] },
+      parent: parent,
+    });
+
+    for (let parentIndex = 0; parentIndex < this.padNr; parentIndex++) {
+      this.pads.push(
+        this.createPad({
+          drum: drum,
+          padIndex: parentIndex,
+          parent: pads,
+        })
+      );
+    }
+
+    return pads;
+  }
+
+  createPad({ drum, padIndex, parent }) {
+    const pad = this.createElem({
+      tag: "div",
+      attrs: {
+        id: drum + "-pad",
+        class: ["pad", "b" + padIndex],
+      },
+      parent: parent,
+    });
+    pad.addEventListener("click", this.activePad);
+    pad.addEventListener("animationend", function () {
+      pad.style.animation = "";
+    });
+    return pad;
+  }
+
+  activePad() {
+    this.classList.toggle("active");
+  }
+  repeat() {
+    let step = this.index % this.padNr;
+
+    const activeBars = this.pads.filter((pad) => {
+      return pad.classList.contains(`b${step}`);
+    });
+
+    //Loop over the pads
+    activeBars.forEach((bar) => {
+      bar.style.animation = `playTrack 0.3s alternate ease-in-out 2`;
+      if (bar.classList.contains("active")) {
+        this.sounds
+          .filter((sound) => {
+            return sound.id.split("-")[0] === bar.id.split("-")[0];
+          })
+          .forEach((soundToPlay) => {
+            soundToPlay.currentTime = 0;
+            soundToPlay.play();
+          });
+      }
+    });
+
+    this.index++;
+  }
+  start() {
+    const interval = (60 / this.bpm) * 1000;
+
+    if (this.isPlaying) {
+      clearInterval(this.isPlaying);
+      this.isPlaying = null;
+    } else {
+      this.isPlaying = setInterval(() => {
+        this.repeat();
+      }, interval);
+    }
+  }
+  updateBtn() {
+    if (!this.isPlaying) {
+      this.playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+      this.playBtn.classList.add("active");
+    } else {
+      this.playBtn.innerHTML = '<i class="fas fa-play"></i>';
+      this.playBtn.classList.remove("active");
+    }
+  }
+  changeSound(e) {
+    const selectionName = e.target.name;
+    const selectionValue = e.target.value;
+
+    const currSound = this.sounds.filter((sound) => {
+      return sound.id.split("-")[0] === selectionName.split("-")[0];
+    })[0];
+
+    currSound.src = selectionValue;
+  }
+  mute(e) {
+    e.target.classList.toggle("active");
+    const mutedDrum = e.target.id.split("-")[0];
+
+    const mutedSound = this.sounds.filter((sound) => {
+      return sound.id.split("-")[0] === mutedDrum;
+    })[0];
+
+    mutedSound.volume = e.target.classList.contains("active") ? 0 : 1;
+
+    const mutedPads = this.pads.filter((pad) => {
+      return pad.id.split("-")[0] === mutedDrum;
+    });
+    mutedPads.forEach((mutedPad) => {
+      mutedPad.classList.toggle("muted");
+    });
+  }
+  changeTempo(e) {
+    this.tempoText.innerText = e.target.value;
+  }
+  updateTempo(e) {
+    this.bpm = e.target.value;
+    clearInterval(this.isPlaying);
+    this.isPlaying = null;
+    if (this.playBtn.classList.contains("active")) {
+      this.start();
+    }
+  }
+  removeDrum(e) {
+    const drumToDelete = e.target.id.split("-")[0];
+
+    this.config = this.config.filter((drum) => {
+      return drumToDelete !== drum;
+    });
+
+    this.renderBeatmaker();
+  }
+
+  addNewBars(e) {
+    this.padNr = Math.min(Math.max(e.target.value, e.target.min), e.target.max);
+
+    this.renderBeatmaker();
+  }
+
+  addDrum() {
+    if (!this.config.includes(this.drumSelect.value)) {
+      this.config.push(this.drumSelect.value);
+
+      this.renderBeatmaker();
+    } else {
+      console.error(this.drumSelect.value + " is already added!");
+    }
+  }
+}
+
+const drumKit = new DrumKit();

@@ -8,6 +8,7 @@ class DrumKit {
     this.padNr = params?.pads || 8;
     this.drums = params?.drums || 4;
     this.drumSelect = null;
+    this.soundClips = soundClips;
 
     this.drumNames = [];
     for (let drum in this.soundClips) {
